@@ -5,10 +5,16 @@ import { metalMaterial } from "./materials";
 export function createRackSection(
   scene: SceneType,
   xPosition: number,
-  config: CreateRackSectionConfig
+  config: CreateRackSectionConfig,
+  hasNext: boolean
 ) {
   const { uprightHeight, shelfWidth, shelfDepth, numLevels, levelSpacing } = config;
-
+  let maxSides;
+  if(hasNext) {
+    maxSides = 1
+  } else {
+    maxSides = 2
+  }
   // Create uprights with braces
   const uprightGeometry = new THREE.BoxGeometry(1, uprightHeight, 1); // Thin, tall uprights
   const numUprightsPerSide = 2; // Two uprights on each side (front and back)
@@ -26,35 +32,45 @@ export function createRackSection(
   const straightBraceLength = shelfDepth + 1; // Subtract the widths of the uprights
   const diagonalBraceLength = shelfDepth + 5; 
 
-  // Create braces
-  const bracePositions = ['|', '\\', '/', '\\', '/', '|']; // Pattern for braces
-  bracePositions.forEach((position, index) => {
-    let braceLength;
-    switch(position) {
-      case '|':
-        braceLength = straightBraceLength;
-        break;
-      case '\\':
-      case '/':
-        braceLength = diagonalBraceLength;
-        break;
-    }
+  
+  // Create braces on both sides
+  for (let side = 0; side < 2; side++) {
+    const bracePositions = ['|', '\\', '/', '\\', '/', '|']; // Pattern for braces
+    bracePositions.forEach((position, index) => {
+      let braceLength;
+      switch(position) {
+        case '|':
+          braceLength = straightBraceLength;
+          break;
+        case '\\':
+        case '/':
+          braceLength = diagonalBraceLength;
+          break;
+      }
 
-    const braceGeometry = new THREE.BoxGeometry(braceLength, 1, 1); 
-    const brace = new THREE.Mesh(braceGeometry, metalMaterial);
-    brace.position.x = -shelfWidth + xPosition + shelfWidth / 2;
-    brace.position.y = index * levelSpacing + levelSpacing / 2;
+      const braceGeometry = new THREE.BoxGeometry(braceLength, 1, 1); 
+      const brace = new THREE.Mesh(braceGeometry, metalMaterial);
 
-    // Adjust rotation and position based on pattern
-    if (position === '|') {
-      brace.rotation.y = Math.PI / 2;
-    } else {
-      brace.rotation.y = Math.PI / 2;
-      brace.rotation.z = position === '\\' ? Math.PI / 4 : -Math.PI / 4;
-    }
+      // Adjust x-position for both sides
+      if (side === 0) {
+        brace.position.x = xPosition + shelfWidth / 2; // Front side
+      } else {
+        brace.position.x = xPosition - shelfWidth / 2; // Back side
+      }
 
-    scene.add(brace);
-  });
+      brace.position.y = index * levelSpacing + levelSpacing / 2;
+
+      // Adjust rotation and position based on pattern
+      if (position === '|') {
+        brace.rotation.y = Math.PI / 2;
+      } else {
+        brace.rotation.y = Math.PI / 2;
+        brace.rotation.z = position === '\\' ? Math.PI / 4 : -Math.PI / 4;
+      }
+
+      scene.add(brace);
+    });
+  }
 
   // Create shelves
   const shelfGeometry = new THREE.BoxGeometry(shelfWidth, 2, shelfDepth);

@@ -40,22 +40,47 @@ const numLevels = 5;
 const levelSpacing = 20; // 2 meters
 const numRacks = 10; // Number of racks
 
-// Function to create a single rack section
+// Function to create a single rack section with braces
 function createRackSection(xPosition: number) {
-  // Create uprights with braces
+  // Create uprights
   const uprightGeometry = new THREE.BoxGeometry(1, uprightHeight, 1); // Thin, tall uprights
-  const braceGeometry = new THREE.BoxGeometry(1, 10, 1); // Braces
   const numUprightsPerSide = 2; // Two uprights on each side (front and back)
   for (let i = 0; i < numUprightsPerSide; i++) {
     for (let j = 0; j < numUprightsPerSide; j++) {
       const upright = new THREE.Mesh(uprightGeometry, metalMaterial);
-      upright.position.x = xPosition + (i - 0.5) * shelfWidth; // Position the uprights on either end of the shelf width
-      upright.position.z = (j - 0.5) * shelfDepth; // Position the uprights on either end of the shelf depth
-      upright.position.y = uprightHeight / 2; // Position the uprights at the half-height
+      upright.position.x = xPosition + (i - 0.5) * shelfWidth;
+      upright.position.z = (j - 0.5) * shelfDepth;
+      upright.position.y = uprightHeight / 2;
       scene.add(upright);
-
     }
   }
+
+  // Create braces
+  const braceLength = shelfWidth - 13;
+  const braceGeometry = new THREE.BoxGeometry(braceLength, 1, 1); // Slim cuboid braces
+  const bracePositions = ['|', '\\', '/', '\\', '/', '|']; // Pattern for braces
+  bracePositions.forEach((position, index) => {
+    const brace = new THREE.Mesh(braceGeometry, metalMaterial);
+    brace.position.x = xPosition + shelfWidth / 2; // Center of the shelf width
+    brace.position.y = index * levelSpacing + levelSpacing / 2; // Position based on level
+
+    // Adjust rotation and position based on pattern
+    switch(position) {
+      case '|':
+        brace.rotation.y = Math.PI / 2; // Rotate 90 degrees for straight braces
+        break;
+      case '\\':
+        brace.rotation.y = Math.PI / 2; // First rotate 90 degrees in Y-axis
+        brace.rotation.z = Math.PI / 4; // Then rotate 45 degrees in Z-axis
+        break;
+      case '/':
+        brace.rotation.y = Math.PI / 2; // First rotate 90 degrees in Y-axis
+        brace.rotation.z = -Math.PI / 4; // Then rotate -45 degrees in Z-axis
+        break;
+    }
+
+    scene.add(brace);
+  });
 
   // Create shelves
   const shelfGeometry = new THREE.BoxGeometry(shelfWidth, 0.5, shelfDepth);
@@ -66,6 +91,7 @@ function createRackSection(xPosition: number) {
     scene.add(shelf);
   }
 }
+
 
 // Create multiple rack sections
 for (let i = 0; i < numRacks; i++) {

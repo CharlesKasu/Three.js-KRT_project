@@ -10,7 +10,7 @@ const main = () => {
   const shelfDepth = 12; // 1.2 meters
   const numLevels = 5;
   const levelSpacing = 20; // 2 meters
-  const numRacks = 2; // Number of racks
+  const numRacks = 10; // Number of racks
 
   // Create multiple rack sections
   for (let i = 0; i < numRacks; i++) {

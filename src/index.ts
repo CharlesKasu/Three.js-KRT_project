@@ -11,19 +11,24 @@ const main = () => {
   const numLevels = 5;
   const levelSpacing = 20; // 2 meters
   const numRacks = 10; // Number of racks
+  const boxesPerShelf = 3; // Number of boxes per shelf
 
   // Create multiple rack sections
   for (let i = 0; i < numRacks; i++) {
-    const hasNext = numRacks - 1 === i
-    createRackSection(scene, i * shelfWidth, {
-      uprightHeight,
-      levelSpacing,
-      numLevels,
-      shelfDepth,
-      shelfWidth,
-      
-    },
-    hasNext);
+    const hasNext = numRacks - 1 === i;
+    createRackSection(
+      scene,
+      i * shelfWidth,
+      {
+        uprightHeight,
+        levelSpacing,
+        numLevels,
+        shelfDepth,
+        shelfWidth,
+        boxesPerShelf,
+      },
+      hasNext
+    );
   }
 
   // Handle window resizing

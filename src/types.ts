@@ -4,6 +4,7 @@ export type CreateRackSectionConfig = {
   shelfDepth: number;
   numLevels: number;
   levelSpacing: number;
+  boxesPerShelf: number;
 };
 
 export type SceneType = THREE.Scene;

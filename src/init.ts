@@ -13,7 +13,8 @@ export const initializeThree = () => {
     0.1,
     1000
   );
-  camera.position.set(150, 50, 100); // Adjust camera position to fit all racks
+  camera.position.set(150, 50, 160); // Adjust camera position to fit all racks
+  camera.rotateY(900);
 
   // Renderer setup
   const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -36,5 +37,9 @@ export const initializeThree = () => {
   // debug: outlines directional camera shadow box
   // scene.add(new THREE.CameraHelper(directionalLight.shadow.camera));
 
-  return { scene, camera, renderer, controls };
+  const pointer = new THREE.Vector2();
+
+  const raycaster = new THREE.Raycaster();
+
+  return { scene, camera, renderer, controls, pointer, raycaster };
 };

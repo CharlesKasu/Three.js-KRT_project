@@ -15,6 +15,7 @@ export function createRackSection(
     numLevels,
     levelSpacing,
     boxesPerShelf,
+    boxes,
   } = config;
   let maxSides;
   if (hasNext) {
@@ -79,17 +80,24 @@ export function createRackSection(
   }
 
   // Create shelves
-  const shelfGeometry = new THREE.BoxGeometry(shelfWidth, 2, shelfDepth);
-  const BoxGeometry = new THREE.BoxGeometry(
-    shelfWidth / boxesPerShelf - 2,
-    levelSpacing - 5,
-    shelfDepth - 2
-  );
   for (let i = 0; i < numLevels; i++) {
+    const shelfGeometry = new THREE.BoxGeometry(shelfWidth, 2, shelfDepth);
     const shelf = new THREE.Mesh(shelfGeometry, metalMaterial);
 
     for (let j = 0; j < boxesPerShelf; j++) {
-      const box = new THREE.Mesh(BoxGeometry, cardboardMaterial);
+      const BoxGeometry = new THREE.BoxGeometry(
+        shelfWidth / boxesPerShelf - 2,
+        levelSpacing - 5,
+        shelfDepth - 2
+      );
+      const box = new THREE.Mesh(
+        BoxGeometry,
+        new THREE.MeshStandardMaterial({
+          color: 0xcc9966,
+          roughness: 0.8,
+          metalness: 0.2,
+        })
+      );
       box.position.x =
         xPosition -
         shelfWidth / 2 +
@@ -97,6 +105,7 @@ export function createRackSection(
         j * (shelfWidth / boxesPerShelf);
       box.position.y = i * levelSpacing + levelSpacing / 2 - 2.5;
       scene.add(box);
+      boxes.push(box);
     }
 
     shelf.position.x = xPosition;

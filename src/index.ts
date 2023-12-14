@@ -1,8 +1,11 @@
 import { createRackSection } from "./createRackSection";
 import { initializeThree } from "./init";
-
+import * as THREE from "three";
+import { BoxMesh } from "./types";
+import { cardboardMaterial } from "./materials";
 const main = () => {
-  const { scene, camera, renderer, controls } = initializeThree();
+  const { scene, camera, renderer, controls, pointer, raycaster } =
+    initializeThree();
 
   // Rack dimensions and geometry setup
   const uprightHeight = 110; // 11 meters
@@ -12,6 +15,8 @@ const main = () => {
   const levelSpacing = 20; // 2 meters
   const numRacks = 10; // Number of racks
   const boxesPerShelf = 3; // Number of boxes per shelf
+  const boxes: BoxMesh[] = [];
+  let INTERSECTED: any;
 
   // Create multiple rack sections
   for (let i = 0; i < numRacks; i++) {
@@ -26,6 +31,7 @@ const main = () => {
         shelfDepth,
         shelfWidth,
         boxesPerShelf,
+        boxes,
       },
       hasNext
     );
@@ -39,10 +45,39 @@ const main = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
+  //handle and catch pointer movement
+  document.addEventListener("pointermove", onPointerMove);
+  function onPointerMove(event: PointerEvent) {
+    // console.log(event.clientX);
+    pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  }
+
   // Animation loop
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
+
+    raycaster.setFromCamera(pointer, camera);
+
+    const intersects = raycaster.intersectObjects(boxes, false);
+
+    if (intersects.length > 0) {
+      if (INTERSECTED != intersects[0].object) {
+        if (INTERSECTED)
+          INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
+        INTERSECTED = intersects[0].object;
+        INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+        INTERSECTED.material.emissive.setHex(0xff0000);
+      }
+    } else {
+      if (INTERSECTED)
+        INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
+      INTERSECTED = null;
+    }
+
     renderer.render(scene, camera);
   }
 

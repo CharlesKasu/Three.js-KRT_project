@@ -36,5 +36,9 @@ export const initializeThree = () => {
   // debug: outlines directional camera shadow box
   // scene.add(new THREE.CameraHelper(directionalLight.shadow.camera));
 
-  return { scene, camera, renderer, controls };
+  const pointer = new THREE.Vector2();
+
+  const raycaster = new THREE.Raycaster();
+
+  return { scene, camera, renderer, controls, pointer, raycaster };
 };

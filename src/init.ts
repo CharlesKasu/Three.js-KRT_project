@@ -13,7 +13,8 @@ export const initializeThree = () => {
     0.1,
     1000
   );
-  camera.position.set(150, 50, 100); // Adjust camera position to fit all racks
+  camera.position.set(150, 50, 160); // Adjust camera position to fit all racks
+  camera.rotateY(900);
 
   // Renderer setup
   const renderer = new THREE.WebGLRenderer({ antialias: true });

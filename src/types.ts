@@ -6,6 +6,7 @@ export type CreateRackSectionConfig = {
   levelSpacing: number;
   boxesPerShelf: number;
   boxes: BoxMesh[];
+  rackNumber: number;
 };
 
 export type BoxMesh = THREE.Mesh<

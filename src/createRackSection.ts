@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { CreateRackSectionConfig, SceneType } from "./types";
 import { cardboardMaterial, metalMaterial } from "./materials";
+import { dataArray } from "./boxesConfig";
 
 export function createRackSection(
   scene: SceneType,
@@ -16,6 +17,7 @@ export function createRackSection(
     levelSpacing,
     boxesPerShelf,
     boxes,
+    rackNumber,
   } = config;
   let maxSides;
   if (hasNext) {
@@ -78,13 +80,21 @@ export function createRackSection(
       scene.add(brace);
     });
   }
-
   // Create shelves
   for (let i = 0; i < numLevels; i++) {
     const shelfGeometry = new THREE.BoxGeometry(shelfWidth, 2, shelfDepth);
     const shelf = new THREE.Mesh(shelfGeometry, metalMaterial);
 
     for (let j = 0; j < boxesPerShelf; j++) {
+      const foundBox = dataArray.find(
+        ({ rackOrdinalNumber, levelOrdinalNumber, slotOrdinalNumber }) =>
+          rackOrdinalNumber === rackNumber &&
+          levelOrdinalNumber === i &&
+          slotOrdinalNumber === j
+      );
+
+      if (!foundBox) continue;
+
       const BoxGeometry = new THREE.BoxGeometry(
         shelfWidth / boxesPerShelf - 2,
         levelSpacing - 5,
@@ -104,6 +114,10 @@ export function createRackSection(
         shelfWidth / boxesPerShelf / 2 +
         j * (shelfWidth / boxesPerShelf);
       box.position.y = i * levelSpacing + levelSpacing / 2 - 2.5;
+      box.userData = {
+        uuid: foundBox.uuid,
+        socketLoadCapacity: foundBox.socketLoadCapacity,
+      };
       scene.add(box);
       boxes.push(box);
     }

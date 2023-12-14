@@ -4,6 +4,9 @@ import * as THREE from "three";
 import { BoxMesh } from "./types";
 import { cardboardMaterial } from "./materials";
 const main = () => {
+  const uuidBox = document.querySelector(".uuid");
+  const capacityBox = document.querySelector(".capacity");
+
   const { scene, camera, renderer, controls, pointer, raycaster } =
     initializeThree();
 
@@ -32,6 +35,7 @@ const main = () => {
         shelfWidth,
         boxesPerShelf,
         boxes,
+        rackNumber: i,
       },
       hasNext
     );
@@ -48,7 +52,6 @@ const main = () => {
   //handle and catch pointer movement
   document.addEventListener("pointermove", onPointerMove);
   function onPointerMove(event: PointerEvent) {
-    // console.log(event.clientX);
     pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
@@ -64,16 +67,24 @@ const main = () => {
 
     if (intersects.length > 0) {
       if (INTERSECTED != intersects[0].object) {
-        if (INTERSECTED)
+        if (INTERSECTED) {
           INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+          uuidBox.innerHTML = `UUID:`;
+          capacityBox.innerHTML = `CAPACITY:`;
+        }
 
         INTERSECTED = intersects[0].object;
         INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
         INTERSECTED.material.emissive.setHex(0xff0000);
+        uuidBox.innerHTML = `UUID: ${INTERSECTED.userData.uuid}`;
+        capacityBox.innerHTML = `CAPACITY: ${INTERSECTED.userData.socketLoadCapacity}`;
       }
     } else {
-      if (INTERSECTED)
+      if (INTERSECTED) {
         INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+        uuidBox.innerHTML = `UUID:`;
+        capacityBox.innerHTML = `CAPACITY:`;
+      }
 
       INTERSECTED = null;
     }
